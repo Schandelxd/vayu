@@ -1,3 +1,18 @@
+// android/build.gradle.kts
+// Use old-style buildscript/classpath approach to avoid mixing plugin DSLs.
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // Android Gradle plugin
+        classpath("com.android.tools.build:gradle:8.0.2")
+
+    }
+}
+
 allprojects {
     repositories {
         google()

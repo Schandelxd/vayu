@@ -1,3 +1,4 @@
+// lib/src/services/geolocation_service.dart
 import 'package:geolocator/geolocator.dart';
 
 class GeolocationService {
@@ -24,7 +25,11 @@ class GeolocationService {
       throw Exception('Location permission permanently denied. Please enable it from settings.');
     }
 
-    // All good: get position
-    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    // All good: get position using the new LocationSettings API
+    return await Geolocator.getCurrentPosition(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+      ),
+    );
   }
 }

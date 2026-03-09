@@ -1,27 +1,46 @@
-
+// lib/main.dart
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'src/ui/screens/auth_screen.dart';
+import 'src/ui/screens/profile_screen.dart';
 import 'src/ui/screens/report_screen.dart';
 import 'src/ui/screens/insights_screen.dart';
 import 'src/ui/screens/explore_screen.dart';
 
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
-  runApp(const AirCheckApp());
+  final prefs = await SharedPreferences.getInstance();
+  final loggedIn = prefs.getBool('loggedIn') ?? false;
+  final profileDone = prefs.getBool('local_profile_completed') ?? false;
+
+  String initialRoute = '/auth';
+  if (loggedIn) {
+    initialRoute = profileDone ? '/home' : '/profile';
+  }
+
+  runApp(VayuApp(initialRoute: initialRoute));
 }
 
-class AirCheckApp extends StatelessWidget {
-  const AirCheckApp({super.key});
+class VayuApp extends StatelessWidget {
+  final String initialRoute;
+  const VayuApp({super.key, required this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AirCheck',
+      title: 'Vayu',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.indigo,
         useMaterial3: true,
       ),
-      home: const MainShell(),
+      initialRoute: initialRoute,
+      routes: {
+        '/auth': (context) => const AuthScreen(),
+        '/profile': (context) => const ProfileScreen(),
+        '/home': (context) => const MainShell(),
+      },
     );
   }
 }
@@ -36,10 +55,7 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _selectedIndex = 0;
 
-  // Use the real screen widgets here.
-  // If any of these are stateful and Dart complains about `const`,
-  // remove the `const` from that list item (e.g. ReportScreen()).
-  final List<Widget> _pages = <Widget>[
+  static const List<Widget> _pages = <Widget>[
     ReportScreen(),
     InsightsScreen(),
     ExploreScreen(),
@@ -94,7 +110,7 @@ class _MainShellState extends State<MainShell> {
             const SizedBox(width: 12),
             GestureDetector(
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Open profile (TODO)')));
+                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
               },
               child: const CircleAvatar(radius: 20, child: Icon(Icons.person)),
             ),
